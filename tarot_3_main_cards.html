@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 главные карты — Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0a2e, #2d1b4e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 25px 0 20px;
+            border-bottom: 3px solid #2DD4BF;
+            margin-bottom: 25px;
+        }
+        .logo-section .brand {
+            font-size: 2em;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .logo-section .brand .highlight {
+            color: #2DD4BF;
+        }
+        .logo-section .brand .number-7 {
+            display: inline-block;
+            background: #2DD4BF;
+            color: #1a0a2e;
+            font-size: 0.8em;
+            font-weight: 900;
+            width: 42px;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            border-radius: 50%;
+            margin: 0 4px;
+            box-shadow: 0 0 25px rgba(45, 212, 191, 0.25);
+        }
+        .logo-section .subtitle {
+            font-size: 0.9em;
+            color: #2DD4BF;
+            letter-spacing: 3px;
+            font-weight: 300;
+            margin-top: 4px;
+        }
+        .logo-section .author {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .page-title h2 {
+            font-size: 1.8em;
+            color: #ffd700;
+            margin-bottom: 6px;
+        }
+        .page-title p {
+            color: #c9b0e6;
+            font-size: 1em;
+        }
+
+        /* ===== КАЛЬКУЛЯТОР ===== */
+        .calculator-block {
+            background: rgba(45, 27, 78, 0.5);
+            border-radius: 20px;
+            padding: 30px 25px;
+            border: 1px solid rgba(45, 212, 191, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .calculator-block .input-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .calculator-block .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .calculator-block .input-group label {
+            font-size: 0.8em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .calculator-block .input-group input {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            background: rgba(26, 10, 46, 0.6);
+            color: #fff;
+            font-size: 1em;
+            width: 120px;
+            transition: 0.3s;
+        }
+        .calculator-block .input-group input:focus {
+            border-color: #2DD4BF;
+            outline: none;
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.05);
+        }
+        .calculator-block .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+        .calc-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .calc-btn {
+            padding: 10px 35px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #2DD4BF, #1a9e8a);
+            color: #1a0a2e;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(45, 212, 191, 0.25);
+        }
+        .calc-btn.reset {
+            background: rgba(255, 255, 255, 0.05);
+            color: #c9b0e6;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .calc-btn.reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        /* ===== РЕЗУЛЬТАТ ===== */
+        .result-block {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+        .result-block.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 900px) {
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-card {
+            background: rgba(45, 27, 78, 0.4);
+            border-radius: 16px;
+            padding: 20px 18px;
+            border: 2px solid rgba(45, 212, 191, 0.08);
+            transition: 0.3s;
+            text-align: center;
+        }
+        .result-card:hover {
+            border-color: rgba(45, 212, 191, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .result-card .rc-badge {
+            font-size: 0.65em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: rgba(45, 212, 191, 0.1);
+            padding: 4px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .result-card .rc-sub {
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .result-card .rc-image {
+            width: 100%;
+            max-width: 130px;
+            height: auto;
+            border-radius: 10px;
+            border: 3px solid rgba(45, 212, 191, 0.15);
+            margin-bottom: 10px;
+        }
+        .result-card .rc-number {
+            font-size: 0.8em;
+            color: #2DD4BF;
+            font-weight: 700;
+        }
+        .result-card .rc-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #ffd700;
+            margin: 2px 0;
+        }
+        .result-card .rc-keywords {
+            font-size: 0.85em;
+            color: #2DD4BF;
+            font-weight: 600;
+        }
+        .result-card .rc-desc {
+            font-size: 0.85em;
+            color: #c9b0e6;
+            line-height: 1.5;
+            margin: 8px 0;
+            text-align: left;
+        }
+        .result-card .rc-desc .label {
+            color: #2DD4BF;
+            font-weight: 600;
+            font-size: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== ТАБЛИЦА АРКАНОВ ===== */
+        .table-block {
+            background: rgba(45, 27, 78, 0.3);
+            border-radius: 16px;
+            padding: 20px 18px;
+            border: 1px solid rgba(45, 212, 191, 0.05);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+        .table-block h3 {
+            text-align: center;
+            color: #2DD4BF;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+        }
+        .arcana-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        .arcana-table th {
+            padding: 8px 10px;
+            text-align: center;
+            border-bottom: 2px solid rgba(45, 212, 191, 0.15);
+            color: #2DD4BF;
+            font-weight: 600;
+        }
+        .arcana-table td {
+            padding: 8px 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #c9b0e6;
+        }
+        .arcana-table .highlight-row td {
+            background: rgba(45, 212, 191, 0.08);
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.25);
+            padding: 15px;
+            font-size: 0.75em;
+            border-top: 1px solid rgba(45, 212, 191, 0.08);
+            margin-top: 20px;
+        }
+        .footer span {
+            color: #2DD4BF;
+        }
+
+        @media (max-width: 768px) {
+            .logo-section .brand {
+                font-size: 1.4em;
+            }
+            .logo-section .brand .number-7 {
+                width: 34px;
+                height: 34px;
+                line-height: 34px;
+                font-size: 0.7em;
+            }
+            .calculator-block .input-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .calculator-block .input-group {
+                width: 100%;
+                max-width: 200px;
+            }
+            .calculator-block .input-group input {
+                width: 100%;
+            }
+            .calc-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .calc-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== ЛОГОТИП ===== -->
+        <div class="logo-section">
+            <div class="brand">
+                <span>RelationMap</span>
+                <span class="highlight">|</span>
+                <span class="number-7">7</span>
+                <span>шагов к <span class="highlight">ясности</span></span>
+            </div>
+            <div class="subtitle">ТРИ ГЛАВНЫЕ КАРТЫ</div>
+            <div class="author">Та самая Светлана</div>
+        </div>
+
+        <!-- ===== ЗАГОЛОВОК ===== -->
+        <div class="page-title">
+            <h2>🌟 Ваши 3 главные карты</h2>
+            <p>Введите дату рождения и узнайте свой Аркан, карту года и карту месяца</p>
+        </div>
+
+        <!-- ===== КАЛЬКУЛЯТОР ===== -->
+        <div class="calculator-block">
+            <div class="input-row">
+                <div class="input-group">
+                    <label>📅 День</label>
+                    <input type="number" id="birthDay" min="1" max="31" value="15" placeholder="День">
+                </div>
+                <div class="input-group">
+                    <label>📅 Месяц</label>
+                    <input type="number" id="birthMonth" min="1" max="12" value="6" placeholder="Месяц">
+                </div>
+                <div class="input-group">
+                    <label>📅 Год рождения</label>
+                    <input type="number" id="birthYear" min="1900" max="2099" value="1990" placeholder="Год">
+                </div>
+            </div>
+            <div class="calc-buttons">
+                <button class="calc-btn" onclick="calculateCards()">🔮 Рассчитать</button>
+                <button class="calc-btn reset" onclick="resetAll()">✕ Очистить</button>
+            </div>
+        </div>
+
+        <!-- ===== РЕЗУЛЬТАТ ===== -->
+        <div class="result-block" id="resultBlock">
+            <div class="result-grid" id="resultGrid">
+                <!-- Заполняется JS -->
+            </div>
+        </div>
+
+        <!-- ===== ТАБЛИЦА АРКАНОВ ===== -->
+        <div class="table-block" id="tableBlock">
+            <h3>📋 Все 22 Старших аркана</h3>
+            <table class="arcana-table" id="arcanaTable">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Аркан</th>
+                        <th>Ключевые слова</th>
+                    </tr>
+                </thead>
+                <tbody id="arcanaTableBody">
+                    <!-- Заполняется JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            RelationMap · <span>7 шагов к ясности</span> · Та самая Светлана · © 2026
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // ДАННЫЕ: 22 СТАРШИХ АРКАНА С ПОЛНЫМИ ЗНАЧЕНИЯМИ ПО 5 АСПЕКТАМ
+        // ============================================================
+
+        const arcanaData = [{
+            number: 0,
+            name: 'Шут',
+            keywords: 'Начало, спонтанность, свобода, доверие',
+            img: 'images/00_fool.jpg',
+            general: 'Новое начало',
+            relationships: 'Лёгкость, флирт, свобода, отсутствие обязательств',
+            work: 'Новые проекты, стартапы, рисковые решения',
+            warning: 'Не будьте слишком доверчивы, смотрите на реальность',
+            action: 'Сделайте шаг вперёд, доверьтесь своему чутью'
+        }, {
+            number: 1,
+            name: 'Маг',
+            keywords: 'Воля, действие, мастерство, инициатива',
+            img: 'images/01_magician.jpg',
+            general: 'Сила воли',
+            relationships: 'Активная позиция, создание отношений своими руками',
+            work: 'Лидерство, предпринимательство, творческое самовыражение',
+            warning: 'Не распыляйтесь, сосредоточьтесь на одной цели',
+            action: 'Действуйте! Используйте все свои ресурсы и таланты'
+        }, {
+            number: 2,
+            name: 'Верховная Жрица',
+            keywords: 'Интуиция, мудрость, тайна, тишина',
+            img: 'images/02_high_priestess.jpg',
+            general: 'Внутреннее знание',
+            relationships: 'Глубокие эмоциональные связи, умение слушать и понимать',
+            work: 'Психология, консультирование, творчество, эзотерика',
+            warning: 'Не игнорируйте свои ощущения, слушайте себя',
+            action: 'Уединитесь, прислушайтесь к своему внутреннему голосу'
+        }, {
+            number: 3,
+            name: 'Императрица',
+            keywords: 'Творчество, изобилие, забота, плодородие',
+            img: 'images/03_empress.jpg',
+            general: 'Созидание и забота',
+            relationships: 'Гармония, создание семьи, забота о близких',
+            work: 'Творчество, дизайн, работа с детьми, агробизнес',
+            warning: 'Не забывайте заботиться о себе, заботясь о других',
+            action: 'Создавайте, растите и заботьтесь о себе и близких'
+        }, {
+            number: 4,
+            name: 'Император',
+            keywords: 'Структура, власть, порядок, ответственность',
+            img: 'images/04_emperor.jpg',
+            general: 'Порядок и структура',
+            relationships: 'Стабильность, чёткие договорённости, роль лидера',
+            work: 'Управление, юриспруденция, архитектура, строительство',
+            warning: 'Не будьте слишком жёсткими, ищите баланс',
+            action: 'Возьмите ответственность и создайте порядок в своей жизни'
+        }, {
+            number: 5,
+            name: 'Верховный Жрец',
+            keywords: 'Традиция, обучение, вера, наставничество',
+            img: 'images/05_hierophant.jpg',
+            general: 'Знания и традиции',
+            relationships: 'Соблюдение традиций, общие ценности, духовная близость',
+            work: 'Преподавание, наука, религия, консультирование',
+            warning: 'Не следуйте догмам слепо, сохраняйте критическое мышление',
+            action: 'Учитесь и передавайте свои знания другим'
+        }, {
+            number: 6,
+            name: 'Влюблённые',
+            keywords: 'Выбор, отношения, ценности, любовь',
+            img: 'images/06_lovers.jpg',
+            general: 'Выбор и ценности',
+            relationships: 'Любовь, партнёрство, важный выбор в отношениях',
+            work: 'Работа в паре, переговоры, консультирование',
+            warning: 'Будьте честны с собой в своём выборе',
+            action: 'Примите решение, основанное на ваших истинных ценностях'
+        }, {
+            number: 7,
+            name: 'Колесница',
+            keywords: 'Контроль, победа, движение, воля',
+            img: 'images/07_chariot.jpg',
+            general: 'Движение к победе',
+            relationships: 'Активная позиция, контроль над развитием отношений',
+            work: 'Бизнес, спорт, управление, военное дело',
+            warning: 'Не теряйте контроль над своими эмоциями',
+            action: 'Двигайтесь вперёд с уверенностью и решимостью'
+        }, {
+            number: 8,
+            name: 'Сила',
+            keywords: 'Внутренняя мощь, терпение, мягкость',
+            img: 'images/08_strength.jpg',
+            general: 'Внутренняя сила',
+            relationships: 'Терпение, принятие, умение прощать и понимать',
+            work: 'Психология, наставничество, управление через доверие',
+            warning: 'Не подавляйте свои чувства, сила в осознании',
+            action: 'Проявляйте терпение и мягкую, но уверенную силу'
+        }, {
+            number: 9,
+            name: 'Отшельник',
+            keywords: 'Поиск, уединение, мудрость, свет',
+            img: 'images/09_hermit.jpg',
+            general: 'Поиск истины',
+            relationships: 'Время разобраться в себе до начала отношений',
+            work: 'Наука, исследования, психология, духовные практики',
+            warning: 'Не замыкайтесь от мира полностью',
+            action: 'Уединитесь, чтобы найти ответы внутри себя'
+        }, {
+            number: 10,
+            name: 'Колесо Фортуны',
+            keywords: 'Судьба, циклы, перемены, удача',
+            img: 'images/10_wheel_of_fortune.jpg',
+            general: 'Циклы и перемены',
+            relationships: 'Судьбоносные встречи, смена этапов отношений',
+            work: 'Работа, связанная с изменениями, риск, азарт',
+            warning: 'Не пытайтесь контролировать то, что от вас не зависит',
+            action: 'Примите перемены с доверием к судьбе'
+        }, {
+            number: 11,
+            name: 'Справедливость',
+            keywords: 'Карма, закон, честность, правда',
+            img: 'images/11_justice.jpg',
+            general: 'Честность и карма',
+            relationships: 'Честность, открытость, расстановка точек над i',
+            work: 'Юриспруденция, консультирование, аудит, право',
+            warning: 'Не пытайтесь обмануть, правда восторжествует',
+            action: 'Будьте честны с собой и с другими людьми'
+        }, {
+            number: 12,
+            name: 'Повешенный',
+            keywords: 'Пауза, жертва, новый взгляд',
+            img: 'images/12_hanged_man.jpg',
+            general: 'Пауза и новое видение',
+            relationships: 'Жертва ради отношений или пересмотр своего взгляда',
+            work: 'Творчество, философия, кризисные ситуации',
+            warning: 'Не застревайте в состоянии жертвы',
+            action: 'Измените угол зрения, отпустите контроль'
+        }, {
+            number: 13,
+            name: 'Смерть',
+            keywords: 'Трансформация, обновление, освобождение',
+            img: 'images/13_death.jpg',
+            general: 'Трансформация',
+            relationships: 'Завершение отношений или этапа, освобождение для нового',
+            work: 'Смена деятельности, кризисный менеджмент, психология',
+            warning: 'Не бойтесь перемен, они ведут к обновлению',
+            action: 'Отпустите прошлое и примите трансформацию'
+        }, {
+            number: 14,
+            name: 'Умеренность',
+            keywords: 'Баланс, гармония, терпение, исцеление',
+            img: 'images/14_temperance.jpg',
+            general: 'Баланс и гармония',
+            relationships: 'Гармония, взаимопонимание, терпение',
+            work: 'Конфликтология, искусство, медицина, управление',
+            warning: 'Не торопитесь, гармония требует времени',
+            action: 'Ищите баланс и двигайтесь плавно и терпеливо'
+        }, {
+            number: 15,
+            name: 'Дьявол',
+            keywords: 'Тень, зависимости, освобождение',
+            img: 'images/15_devil.jpg',
+            general: 'Освобождение от оков',
+            relationships: 'Зависимые отношения, страсти, манипуляции',
+            work: 'Преодоление кризисов, психология, финансы',
+            warning: 'Осознайте, что управляет вами',
+            action: 'Разорвите цепи и освободитесь от своих зависимостей'
+        }, {
+            number: 16,
+            name: 'Башня',
+            keywords: 'Крах, очищение, освобождение, новое',
+            img: 'images/16_tower.jpg',
+            general: 'Крах и освобождение',
+            relationships: 'Кризис, разрыв, неожиданные события',
+            work: 'Антикризисное управление, новые проекты',
+            warning: 'Стройте на прочном фундаменте',
+            action: 'Примите крушение как освобождение и начните заново'
+        }, {
+            number: 17,
+            name: 'Звезда',
+            keywords: 'Надежда, исцеление, вдохновение',
+            img: 'images/17_star.jpg',
+            general: 'Надежда и исцеление',
+            relationships: 'Восстановление после кризиса, новая надежда',
+            work: 'Искусство, духовные практики, психология',
+            warning: 'Не теряйте веру в себя',
+            action: 'Верьте в лучшее и позволяйте себе исцеляться'
+        }, {
+            number: 18,
+            name: 'Луна',
+            keywords: 'Иллюзии, страхи, подсознание',
+            img: 'images/18_moon.jpg',
+            general: 'Иллюзии и страхи',
+            relationships: 'Неясность, скрытые чувства, страхи',
+            work: 'Психология, искусство, работа с подсознанием',
+            warning: 'Не верьте иллюзиям, ищите правду',
+            action: 'Загляните в своё подсознание и осветите свои страхи'
+        }, {
+            number: 19,
+            name: 'Солнце',
+            keywords: 'Радость, успех, ясность, свет',
+            img: 'images/19_sun.jpg',
+            general: 'Радость и успех',
+            relationships: 'Гармония, счастье, открытость',
+            work: 'Успешные проекты, признание, радость от работы',
+            warning: 'Не ослепляйтесь счастьем',
+            action: 'Радуйтесь и делитесь своим светом с другими'
+        }, {
+            number: 20,
+            name: 'Суд',
+            keywords: 'Пробуждение, прощение, призвание',
+            img: 'images/20_judgement.jpg',
+            general: 'Пробуждение и призвание',
+            relationships: 'Второй шанс, обновление чувств, прощение',
+            work: 'Призвание, смена деятельности, реализация талантов',
+            warning: 'Не бойтесь прощать, это освобождает',
+            action: 'Проснитесь к своей истинной жизни'
+        }, {
+            number: 21,
+            name: 'Мир',
+            keywords: 'Завершение, целостность, награда',
+            img: 'images/21_world.jpg',
+            general: 'Завершение и целостность',
+            relationships: 'Завершение отношений или выход на новый уровень',
+            work: 'Завершение проекта, пик карьеры, признание',
+            warning: 'Не останавливайтесь, мир — это новая точка старта',
+            action: 'Завершите дела и готовьтесь к новому циклу'
+        }];
+
+        // ============================================================
+        // РАСЧЁТ КАРТ
+        // ============================================================
+
+        function reduceToArcana(num) {
+            while (num > 22) {
+                num = String(num).split('').reduce((a, b) => a + parseInt(b), 0);
+            }
+            return num === 22 ? 0 : num;
+        }
+
+        function calculateCards() {
+            const day = parseInt(document.getElementById('birthDay').value);
+            const month = parseInt(document.getElementById('birthMonth').value);
+            const year = parseInt(document.getElementById('birthYear').value);
+
+            if (!day || !month || !year || day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2099) {
+                alert('Пожалуйста, введите корректную дату рождения');
+                return;
+            }
+
+            // === 1. АРКАН ДНЯ РОЖДЕНИЯ ===
+            const sumBirth = String(day + month + year).split('').reduce((a, b) => a + parseInt(b), 0);
+            const birthArcanaNumber = reduceToArcana(sumBirth);
+
+            // === 2. КАРТА ГОДА ===
+            const currentYear = 2026;
+            const sumYear = day + month + currentYear;
+            const yearArcanaNumber = reduceToArcana(sumYear);
+
+            // === 3. КАРТА МЕСЯЦА ===
+            const currentMonth = new Date().getMonth() + 1;
+            const sumMonth = day + month + currentMonth + currentYear;
+            const monthArcanaNumber = reduceToArcana(sumMonth);
+
+            // === ОТОБРАЖЕНИЕ ===
+            const resultBlock = document.getElementById('resultBlock');
+            resultBlock.classList.add('show');
+
+            const grid = document.getElementById('resultGrid');
+            grid.innerHTML = '';
+
+            grid.appendChild(createResultCard(
+                'Аркан дня рождения',
+                'Ваш врождённый путь, характер, таланты — вся жизнь',
+                birthArcanaNumber
+            ));
+
+            grid.appendChild(createResultCard(
+                'Карта года',
+                'Главная тема этого года — 12 месяцев',
+                yearArcanaNumber
+            ));
+
+            grid.appendChild(createResultCard(
+                'Карта месяца',
+                'Что вы проживаете прямо сейчас — 30 дней',
+                monthArcanaNumber
+            ));
+
+            highlightTableRows([birthArcanaNumber, yearArcanaNumber, monthArcanaNumber]);
+
+            setTimeout(() => {
+                resultBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        function createResultCard(title, subtitle, arcanaNumber) {
+            const arcana = arcanaData.find(a => a.number === arcanaNumber);
+
+            const div = document.createElement('div');
+            div.className = 'result-card';
+            div.innerHTML = `
+                <div class="rc-badge">${title}</div>
+                <div class="rc-sub">${subtitle}</div>
+                <img class="rc-image" src="${arcana.img}" alt="${arcana.name}" onerror="this.style.display='none'">
+                <div class="rc-number">${arcanaNumber === 0 ? '0' : arcanaNumber}</div>
+                <div class="rc-name">${arcana.name}</div>
+                <div class="rc-keywords">${arcana.keywords}</div>
+                <div class="rc-desc">
+                    <div><span class="label">📌 ОБЩЕЕ:</span> ${arcana.general}</div>
+                    <div><span class="label">❤️ В ОТНОШЕНИЯХ:</span> ${arcana.relationships}</div>
+                    <div><span class="label">💼 В РАБОТЕ/ДЕНЬГАХ:</span> ${arcana.work}</div>
+                    <div><span class="label">⚠️ ПРЕДУПРЕЖДЕНИЕ:</span> ${arcana.warning}</div>
+                    <div><span class="label">✅ ДЕЙСТВИЕ:</span> ${arcana.action}</div>
+                </div>
+            `;
+            return div;
+        }
+
+        // ============================================================
+        // СБРОС
+        // ============================================================
+
+        function resetAll() {
+            document.getElementById('birthDay').value = '';
+            document.getElementById('birthMonth').value = '';
+            document.getElementById('birthYear').value = '';
+            document.getElementById('resultBlock').classList.remove('show');
+            document.getElementById('resultGrid').innerHTML = '';
+            document.querySelectorAll('#arcanaTableBody tr').forEach(row => {
+                row.classList.remove('highlight-row');
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        // ТАБЛИЦА
+        // ============================================================
+
+        function renderTable(highlightNumbers) {
+            const tbody = document.getElementById('arcanaTableBody');
+            tbody.innerHTML = '';
+            const highlights = highlightNumbers || [];
+
+            arcanaData.forEach(a => {
+                const tr = document.createElement('tr');
+                if (highlights.includes(a.number)) {
+                    tr.className = 'highlight-row';
+                }
+                tr.innerHTML = `
+                    <td>${a.number === 0 ? '0' : a.number}</td>
+                    <td><strong>${a.name}</strong></td>
+                    <td>${a.keywords}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function highlightTableRows(numbers) {
+            const rows = document.querySelectorAll('#arcanaTableBody tr');
+            rows.forEach(row => {
+                row.classList.remove('highlight-row');
+                const td = row.querySelector('td');
+                if (td) {
+                    const rowNum = parseInt(td.textContent);
+                    if (numbers.includes(rowNum) || (rowNum === 0 && numbers.includes(0))) {
+                        row.classList.add('highlight-row');
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // АВТОЗАПУСК
+        // ============================================================
+
+        renderTable([]);
+        setTimeout(calculateCards, 500);
+
+        console.log('✅ Калькулятор "3 главные карты" загружен!');
+        console.log('🃏 Аркан дня рождения, Карта года, Карта месяца');
+    </script>
+
+</body>
+</html>
