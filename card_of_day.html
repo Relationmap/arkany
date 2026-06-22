@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта дня — Оракул Таро</title>
+    <style>
+        /* ... весь CSS как был ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0620, #1a0a2e, #2d1b4e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background: rgba(26, 10, 46, 0.65);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 35px 30px;
+            border: 1px solid rgba(45, 212, 191, 0.12);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .logo .brand {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+        .logo .brand .highlight {
+            color: #2DD4BF;
+        }
+        .logo .brand .number-7 {
+            display: inline-block;
+            background: #2DD4BF;
+            color: #1a0a2e;
+            font-size: 0.7em;
+            font-weight: 900;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            border-radius: 50%;
+            margin: 0 4px;
+            box-shadow: 0 0 25px rgba(45, 212, 191, 0.2);
+        }
+        .logo .subtitle {
+            font-size: 0.85em;
+            color: #2DD4BF;
+            letter-spacing: 4px;
+            font-weight: 300;
+            margin-top: 2px;
+        }
+        .logo .author {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+        .logo .vk-link {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            background: rgba(45, 212, 191, 0.08);
+            border: 1px solid rgba(45, 212, 191, 0.1);
+            color: #2DD4BF;
+            font-size: 0.75em;
+            text-decoration: none;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .logo .vk-link:hover {
+            background: rgba(45, 212, 191, 0.15);
+            border-color: #2DD4BF;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: 700;
+        }
+        .header p {
+            color: #c9b0e6;
+            font-size: 0.95em;
+            margin-top: 4px;
+        }
+
+        .input-area {
+            background: rgba(45, 27, 78, 0.3);
+            border-radius: 16px;
+            padding: 20px 25px;
+            border: 1px solid rgba(45, 212, 191, 0.08);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .input-group label {
+            font-size: 0.8em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .input-group input {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(45, 212, 191, 0.15);
+            background: rgba(26, 10, 46, 0.5);
+            color: #fff;
+            font-size: 1em;
+            width: 150px;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #2DD4BF;
+            outline: none;
+            box-shadow: 0 0 25px rgba(45, 212, 191, 0.05);
+        }
+        .input-group input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        .btn {
+            padding: 10px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2DD4BF, #1a9e8a);
+            color: #1a0a2e;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(45, 212, 191, 0.25);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #c9b0e6;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(45, 212, 191, 0.2);
+        }
+        .btn-danger {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.12);
+        }
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show {
+            display: block;
+        }
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(45, 212, 191, 0.08);
+            border-top: 3px solid #2DD4BF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .loading p {
+            color: #c9b0e6;
+            font-size: 0.9em;
+        }
+
+        .result-area {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+        .result-area.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .result-card {
+            background: rgba(45, 27, 78, 0.5);
+            border-radius: 20px;
+            padding: 25px 25px;
+            border: 2px solid rgba(45, 212, 191, 0.08);
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+        @media (max-width: 700px) {
+            .result-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        .result-card .card-img {
+            width: 100%;
+            max-width: 180px;
+            border-radius: 12px;
+            border: 3px solid rgba(45, 212, 191, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+        .result-card .card-img:hover {
+            transform: scale(1.03);
+            border-color: #2DD4BF;
+        }
+        .result-card .card-img-placeholder {
+            width: 100%;
+            max-width: 180px;
+            aspect-ratio: 3/5;
+            border-radius: 12px;
+            background: rgba(45, 27, 78, 0.3);
+            border: 2px dashed rgba(45, 212, 191, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: rgba(255, 255, 255, 0.1);
+        }
+        .result-card .card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .result-card .card-number {
+            font-size: 0.8em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        .result-card .card-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        .result-card .card-suit {
+            font-size: 0.9em;
+            color: #2DD4BF;
+        }
+        .result-card .card-keywords {
+            font-size: 0.9em;
+            color: #c9b0e6;
+            font-style: italic;
+        }
+        .result-card .card-meaning {
+            padding: 12px 16px;
+            background: rgba(26, 10, 46, 0.3);
+            border-radius: 10px;
+            border-left: 3px solid #2DD4BF;
+            color: #c9b0e6;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .result-card .card-meaning .label {
+            color: #2DD4BF;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .result-card .card-advice {
+            padding: 12px 16px;
+            background: rgba(255, 215, 0, 0.04);
+            border-radius: 10px;
+            border-left: 3px solid #ffd700;
+            color: #c9b0e6;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .result-card .card-advice .label {
+            color: #ffd700;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .result-card .card-date {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.15);
+            margin-top: 4px;
+        }
+
+        .history-area {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(45, 212, 191, 0.05);
+        }
+        .history-area h4 {
+            color: #2DD4BF;
+            font-size: 0.8em;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #2DD4BF;
+            border-radius: 10px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 12px;
+            background: rgba(26, 10, 46, 0.15);
+            border-radius: 6px;
+            font-size: 0.75em;
+            color: #c9b0e6;
+        }
+        .history-item .h-date {
+            color: #2DD4BF;
+            min-width: 80px;
+        }
+        .history-item .h-name {
+            color: #ffd700;
+        }
+        .history-item .h-suit {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.8em;
+        }
+
+        .share-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .share-btn {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            color: #c9b0e6;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.12);
+            padding: 15px 0 0;
+            font-size: 0.7em;
+            border-top: 1px solid rgba(45, 212, 191, 0.05);
+            margin-top: 20px;
+        }
+        .footer span {
+            color: #2DD4BF;
+        }
+        .footer .footer-vk-link {
+            display: inline-block;
+            margin-top: 6px;
+            color: #2DD4BF;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .footer .footer-vk-link:hover {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(45, 212, 191, 0.2);
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .input-area {
+                flex-direction: column;
+                align-items: center;
+            }
+            .input-group {
+                width: 100%;
+                max-width: 200px;
+            }
+            .input-group input {
+                width: 100%;
+            }
+            .result-card .card-img {
+                max-width: 130px;
+                margin: 0 auto;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.85em;
+            }
+            .logo .brand {
+                font-size: 1.2em;
+            }
+            .history-item {
+                font-size: 0.65em;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== ЛОГОТИП ===== -->
+        <div class="logo">
+            <div class="brand">
+                RelationMap <span class="highlight">|</span>
+                <span class="number-7">7</span>
+                <span>шагов к <span class="highlight">ясности</span></span>
+            </div>
+            <div class="subtitle">КАРТА ДНЯ · ОРАКУЛ ТАРО</div>
+            <div class="author">Та самая Светлана</div>
+            <a href="https://vk.com/relationmap" target="_blank" class="vk-link">📘 Наша группа ВКонтакте</a>
+        </div>
+
+        <!-- ===== ЗАГОЛОВОК ===== -->
+        <div class="header">
+            <h1>🃏 Карта дня</h1>
+            <p>Введите дату — и получите совет от Вселенной</p>
+        </div>
+
+        <!-- ===== ВВОД ДАТЫ ===== -->
+        <div class="input-area">
+            <div class="input-group">
+                <label for="dateInput">📅 Выберите дату</label>
+                <input type="date" id="dateInput">
+            </div>
+            <button class="btn btn-primary" id="getBtn" onclick="getCardOfDay()">🔮 Получить карту дня</button>
+        </div>
+
+        <!-- ===== КНОПКИ ===== -->
+        <div class="btn-row">
+            <button class="btn btn-secondary" onclick="refreshCard()">🔄 Обновить карту</button>
+            <button class="btn btn-danger" onclick="clearAll()">🗑️ Сбросить всё</button>
+        </div>
+
+        <!-- ===== ЗАГРУЗКА ===== -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Карты Таро раскладываются для вас...</p>
+        </div>
+
+        <!-- ===== РЕЗУЛЬТАТ ===== -->
+        <div class="result-area" id="resultArea">
+            <div class="result-card" id="resultCard">
+                <!-- Заполняется JS -->
+            </div>
+            <div class="share-row">
+                <button class="share-btn" onclick="shareResult('vk')">📘 Поделиться ВК</button>
+                <button class="share-btn" onclick="shareResult('tg')">✈️ Telegram</button>
+                <button class="share-btn" onclick="shareResult('copy')">📋 Копировать результат</button>
+            </div>
+        </div>
+
+        <!-- ===== ИСТОРИЯ ===== -->
+        <div class="history-area" id="historyArea" style="display:none;">
+            <h4>📜 Ваши карты дня</h4>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <div class="footer">
+            RelationMap · <span>7 шагов к ясности</span> · Та самая Светлана
+            <br>
+            <a href="https://vk.com/relationmap" target="_blank" class="footer-vk-link">📘 Подписывайтесь на нас ВКонтакте</a>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // ДАННЫЕ: ВСЕ 78 КАРТ (ПУТИ К КАРТИНКАМ — С ПАПКОЙ images/)
+        // ============================================================
+
+        const allCards = [
+            // СТАРШИЕ АРКАНЫ (22)
+            { number: 0, name: 'Шут', suit: 'Старший аркан', keywords: 'Начало, спонтанность, свобода', img: 'images/00_fool.jpg',
+                meaning: 'Сегодня — день нового начала. Доверьтесь своей интуиции и сделайте шаг в неизвестность. Не бойтесь рисковать.',
+                advice: 'Сделайте первый шаг. Ваше сердце знает путь.' },
+            { number: 1, name: 'Маг', suit: 'Старший аркан', keywords: 'Воля, действие, мастерство', img: 'images/01_magician.jpg',
+                meaning: 'У вас есть все инструменты для успеха. Действуйте уверенно, используйте свои таланты.',
+                advice: 'Действуйте решительно. Используйте свои навыки.' },
+            { number: 2, name: 'Верховная Жрица', suit: 'Старший аркан', keywords: 'Интуиция, мудрость, тайна',
+                img: 'images/02_high_priestess.jpg', meaning: 'Прислушайтесь к своему внутреннему голосу. Ответ уже внутри вас.',
+                advice: 'Уединитесь и послушайте свою интуицию.' },
+            { number: 3, name: 'Императрица', suit: 'Старший аркан', keywords: 'Творчество, изобилие, забота',
+                img: 'images/03_empress.jpg', meaning: 'День творчества и заботы. Позвольте себе быть в потоке изобилия.',
+                advice: 'Создавайте, заботьтесь и доверяйте процессу.' },
+            { number: 4, name: 'Император', suit: 'Старший аркан', keywords: 'Структура, власть, порядок', img: 'images/04_emperor.jpg',
+                meaning: 'Сегодня важно создать порядок. Возьмите ситуацию под контроль и действуйте по плану.',
+                advice: 'Установите чёткие правила и следуйте им.' },
+            { number: 5, name: 'Верховный Жрец', suit: 'Старший аркан', keywords: 'Традиция, обучение, вера',
+                img: 'images/05_hierophant.jpg', meaning: 'Обратитесь к мудрости традиций или наставника. Учитесь у других.',
+                advice: 'Учитесь у тех, кто мудрее. Ищите знания.' },
+            { number: 6, name: 'Влюблённые', suit: 'Старший аркан', keywords: 'Выбор, отношения, ценности', img: 'images/06_lovers.jpg',
+                meaning: 'Вы стоите перед важным выбором. Слушайте сердце, но не забывайте о разуме.',
+                advice: 'Примите решение, основанное на ваших ценностях.' },
+            { number: 7, name: 'Колесница', suit: 'Старший аркан', keywords: 'Контроль, победа, движение', img: 'images/07_chariot.jpg',
+                meaning: 'Двигайтесь вперёд с уверенностью. Успех зависит от вашей решимости.',
+                advice: 'Продолжайте движение. Вы на правильном пути.' },
+            { number: 8, name: 'Сила', suit: 'Старший аркан', keywords: 'Внутренняя мощь, терпение', img: 'images/08_strength.jpg',
+                meaning: 'Сила сегодня — в терпении и мягкости. Действуйте спокойно, но уверенно.',
+                advice: 'Проявляйте терпение и мягкую силу.' },
+            { number: 9, name: 'Отшельник', suit: 'Старший аркан', keywords: 'Поиск, уединение, мудрость', img: 'images/09_hermit.jpg',
+                meaning: 'Сегодня нужно время для себя. Выйдите из шума и поищите ответы внутри.',
+                advice: 'Проведите время в одиночестве, и ответ придёт.' },
+            { number: 10, name: 'Колесо Фортуны', suit: 'Старший аркан', keywords: 'Судьба, циклы, перемены',
+                img: 'images/10_wheel_of_fortune.jpg', meaning: 'Жизнь меняется. Доверьтесь потоку — всё идёт к лучшему.',
+                advice: 'Примите изменения с доверием к жизни.' },
+            { number: 11, name: 'Справедливость', suit: 'Старший аркан', keywords: 'Карма, закон, честность',
+                img: 'images/11_justice.jpg', meaning: 'Будьте честны с собой и другими. Правда приведёт к ясности.',
+                advice: 'Будьте объективны и честны.' },
+            { number: 12, name: 'Повешенный', suit: 'Старший аркан', keywords: 'Пауза, жертва, новый взгляд',
+                img: 'images/12_hanged_man.jpg', meaning: 'Сделайте паузу. Посмотрите на ситуацию с другой стороны.',
+                advice: 'Измените угол зрения. Не торопитесь с решением.' },
+            { number: 13, name: 'Смерть', suit: 'Старший аркан', keywords: 'Трансформация, обновление', img: 'images/13_death.jpg',
+                meaning: 'Старое уходит, чтобы освободить место новому. Примите трансформацию.',
+                advice: 'Отпустите прошлое и примите обновление.' },
+            { number: 14, name: 'Умеренность', suit: 'Старший аркан', keywords: 'Баланс, гармония, терпение',
+                img: 'images/14_temperance.jpg', meaning: 'Ищите золотую середину. Баланс приведёт к гармонии.',
+                advice: 'Найдите баланс и двигайтесь плавно.' },
+            { number: 15, name: 'Дьявол', suit: 'Старший аркан', keywords: 'Тень, зависимости, освобождение',
+                img: 'images/15_devil.jpg', meaning: 'Осознайте, что вас ограничивает. Свобода — в освобождении от страхов.',
+                advice: 'Осознайте свои цепи и разорвите их.' },
+            { number: 16, name: 'Башня', suit: 'Старший аркан', keywords: 'Крах, очищение, освобождение', img: 'images/16_tower.jpg',
+                meaning: 'Внезапные перемены неизбежны. Воспринимайте их как очищение.',
+                advice: 'Примите крушение как освобождение.' },
+            { number: 17, name: 'Звезда', suit: 'Старший аркан', keywords: 'Надежда, исцеление, вдохновение',
+                img: 'images/17_star.jpg', meaning: 'Надежда уже рядом. Верьте в лучшее — звезда укажет путь.',
+                advice: 'Верьте в лучшее и позволяйте себе исцеляться.' },
+            { number: 18, name: 'Луна', suit: 'Старший аркан', keywords: 'Иллюзии, страхи, подсознание', img: 'images/18_moon.jpg',
+                meaning: 'Не всё так, как кажется. Разберитесь в иллюзиях и страхах.',
+                advice: 'Смотрите вглубь себя и различайте реальность.' },
+            { number: 19, name: 'Солнце', suit: 'Старший аркан', keywords: 'Радость, успех, ясность', img: 'images/19_sun.jpg',
+                meaning: 'Сегодня — день радости и успеха. Наслаждайтесь моментом.',
+                advice: 'Радуйтесь и делитесь своим светом.' },
+            { number: 20, name: 'Суд', suit: 'Старший аркан', keywords: 'Пробуждение, прощение, призвание',
+                img: 'images/20_judgement.jpg', meaning: 'Вас зовёт новое призвание. Пробудитесь и простите себя и других.',
+                advice: 'Проснитесь к своей истинной жизни и простите.' },
+            { number: 21, name: 'Мир', suit: 'Старший аркан', keywords: 'Завершение, целостность, награда',
+                img: 'images/21_world.jpg', meaning: 'Цикл завершён. Вы достигли цели. Готовьтесь к новому путешествию.',
+                advice: 'Завершите дела и откройтесь новому.' },
+
+            // ===== ЖЕЗЛЫ (14) =====
+            { number: 'W1', name: 'Туз Жезлов', suit: 'Жезлы', keywords: 'Семя, начало, страсть', img: 'images/ace_of_wands.jpg',
+                meaning: 'Сегодня — идеальный день для начала нового дела. Ваша страсть и энергия помогут вам двигаться вперёд.',
+                advice: 'Зажгите огонь и начните действовать!' },
+            { number: 'W2', name: 'Двойка Жезлов', suit: 'Жезлы', keywords: 'Выбор, баланс, решение', img: 'images/two_of_wands.jpg',
+                meaning: 'Стоит выбор. Балансируйте между вариантами, но не затягивайте с решением.',
+                advice: 'Примите решение и двигайтесь в выбранном направлении.' },
+            { number: 'W3', name: 'Тройка Жезлов', suit: 'Жезлы', keywords: 'Рост, первые плоды, развитие',
+                img: 'images/three_of_wands.jpg', meaning: 'Первые результаты уже видны. Продолжайте в том же духе.',
+                advice: 'Продолжайте расти и развиваться.' },
+            { number: 'W4', name: 'Четвёрка Жезлов', suit: 'Жезлы', keywords: 'Стабильность, дом, праздник',
+                img: 'images/four_of_wands.jpg', meaning: 'Сегодня — день стабильности и уюта. Наслаждайтесь моментом.',
+                advice: 'Закрепите успех и наслаждайтесь.' },
+            { number: 'W5', name: 'Пятёрка Жезлов', suit: 'Жезлы', keywords: 'Конфликт, борьба, конкуренция',
+                img: 'images/five_of_wands.jpg', meaning: 'Возможны конфликты. Старайтесь избегать бесполезных споров.',
+                advice: 'Не втягивайтесь в пустые конфликты.' },
+            { number: 'W6', name: 'Шестёрка Жезлов', suit: 'Жезлы', keywords: 'Победа, признание, успех',
+                img: 'images/six_of_wands.jpg', meaning: 'Признание и победа. Наслаждайтесь успехом, но не теряйте голову.',
+                advice: 'Примите победу с благодарностью.' },
+            { number: 'W7', name: 'Семёрка Жезлов', suit: 'Жезлы', keywords: 'Защита, вызов, стойкость',
+                img: 'images/seven_of_wands.jpg', meaning: 'Нужно защищать свои интересы. Будьте стойкими и уверенными.',
+                advice: 'Встаньте на защиту своих интересов.' },
+            { number: 'W8', name: 'Восьмёрка Жезлов', suit: 'Жезлы', keywords: 'Скорость, импульс, быстрота',
+                img: 'images/eight_of_wands.jpg', meaning: 'Всё происходит быстро. Используйте этот импульс!',
+                advice: 'Ускорьте темп и действуйте быстро.' },
+            { number: 'W9', name: 'Девятка Жезлов', suit: 'Жезлы', keywords: 'Выносливость, испытание, стойкость',
+                img: 'images/nine_of_wands.jpg', meaning: 'Вы почти у цели. Не сдавайтесь на финише.',
+                advice: 'Соберитесь с силами для последнего рывка.' },
+            { number: 'W10', name: 'Десятка Жезлов', suit: 'Жезлы', keywords: 'Перегрузка, завершение, освобождение',
+                img: 'images/ten_of_wands.jpg', meaning: 'Вы несёте слишком много. Пора сбросить лишний груз.',
+                advice: 'Сбросьте лишнее и освободитесь.' },
+            { number: 'WP', name: 'Паж Жезлов', suit: 'Жезлы', keywords: 'Начало, ученик, энтузиазм', img: 'images/page_of_wands.jpg',
+                meaning: 'Новое начинание или обучение. Откройтесь новому опыту.',
+                advice: 'Откройтесь новому и начните с малого.' },
+            { number: 'WK', name: 'Рыцарь Жезлов', suit: 'Жезлы', keywords: 'Действие, скорость, страсть',
+                img: 'images/knight_of_wands.jpg', meaning: 'Время действовать быстро и решительно. Энергия переполняет.',
+                advice: 'Действуйте с энтузиазмом, но с умом.' },
+            { number: 'WQ', name: 'Королева Жезлов', suit: 'Жезлы', keywords: 'Забота, тепло, уверенность',
+                img: 'images/queen_of_wands.jpg', meaning: 'Проявите заботу и тепло. Ваша уверенность вдохновляет других.',
+                advice: 'Будьте опорой и заботой для других.' },
+            { number: 'WKg', name: 'Король Жезлов', suit: 'Жезлы', keywords: 'Власть, лидерство, опыт',
+                img: 'images/king_of_wands.jpg', meaning: 'Возглавьте процесс. Ваша власть и опыт ведут других к успеху.',
+                advice: 'Будьте мудрым лидером.' },
+
+            // ===== КУБКИ (14) =====
+            { number: 'C1', name: 'Туз Кубков', suit: 'Кубки', keywords: 'Чувства, любовь, начало', img: 'images/ace_of_cups.jpg',
+                meaning: 'Сегодня — день любви и открытости. Позвольте чувствам течь свободно.',
+                advice: 'Откройте сердце для любви.' },
+            { number: 'C2', name: 'Двойка Кубков', suit: 'Кубки', keywords: 'Встреча, союз, гармония', img: 'images/two_of_cups.jpg',
+                meaning: 'Гармония в отношениях. Создайте союз на основе взаимопонимания.',
+                advice: 'Создайте гармонию в отношениях.' },
+            { number: 'C3', name: 'Тройка Кубков', suit: 'Кубки', keywords: 'Радость, праздник, дружба', img: 'images/three_of_cups.jpg',
+                meaning: 'День радости и праздника. Наслаждайтесь общением с близкими.',
+                advice: 'Радуйтесь и делитесь радостью.' },
+            { number: 'C4', name: 'Четвёрка Кубков', suit: 'Кубки', keywords: 'Насыщение, скука, размышления',
+                img: 'images/four_of_cups.jpg', meaning: 'Вы можете чувствовать скуку или неудовлетворённость. Посмотрите вокруг.',
+                advice: 'Откройте глаза на то, что уже есть.' },
+            { number: 'C5', name: 'Пятёрка Кубков', suit: 'Кубки', keywords: 'Потеря, сожаление, горе', img: 'images/five_of_cups.jpg',
+                meaning: 'Не зацикливайтесь на потерях. Смотрите вперёд.',
+                advice: 'Признайте боль и двигайтесь дальше.' },
+            { number: 'C6', name: 'Шестёрка Кубков', suit: 'Кубки', keywords: 'Ностальгия, помощь, прошлое',
+                img: 'images/six_of_cups.jpg', meaning: 'Прошлое даёт вам ресурс. Вспомните опыт, он может помочь.',
+                advice: 'Вспомните прошлый опыт — он поможет.' },
+            { number: 'C7', name: 'Семёрка Кубков', suit: 'Кубки', keywords: 'Иллюзии, фантазии, выбор', img: 'images/seven_of_cups.jpg',
+                meaning: 'Не принимайте желаемое за действительное. Посмотрите на ситуацию реально.',
+                advice: 'Будьте реалистом и проверяйте факты.' },
+            { number: 'C8', name: 'Восьмёрка Кубков', suit: 'Кубки', keywords: 'Уход, поиск, движение', img: 'images/eight_of_cups.jpg',
+                meaning: 'Иногда нужно уйти, чтобы найти лучшее. Идите за своим сердцем.',
+                advice: 'Идите вперёд к тому, что откликается сердцу.' },
+            { number: 'C9', name: 'Девятка Кубков', suit: 'Кубки', keywords: 'Исполнение желаний, счастье',
+                img: 'images/nine_of_cups.jpg', meaning: 'Ваши желания сбываются. Наслаждайтесь моментом.',
+                advice: 'Наслаждайтесь и ставьте новые цели.' },
+            { number: 'C10', name: 'Десятка Кубков', suit: 'Кубки', keywords: 'Гармония, счастье, семья', img: 'images/ten_of_cups.jpg',
+                meaning: 'День полной гармонии и счастья. Цените то, что имеете.',
+                advice: 'Цените то, что имеете, и открывайтесь новому.' },
+            { number: 'CP', name: 'Паж Кубков', suit: 'Кубки', keywords: 'Романтика, открытость, мечты', img: 'images/page_of_cups.jpg',
+                meaning: 'День романтики. Откройтесь новым чувствам и мечтам.',
+                advice: 'Откройтесь любви и романтике.' },
+            { number: 'CK', name: 'Рыцарь Кубков', suit: 'Кубки', keywords: 'Признание, романтика, чувства',
+                img: 'images/knight_of_cups.jpg', meaning: 'Яркое проявление чувств. Действуйте с любовью.',
+                advice: 'Следуйте за сердцем и действуйте с любовью.' },
+            { number: 'CQ', name: 'Королева Кубков', suit: 'Кубки', keywords: 'Забота, чуткость, эмпатия',
+                img: 'images/queen_of_cups.jpg', meaning: 'Проявите чуткость и заботу. Ваша эмпатия — ваш дар.',
+                advice: 'Будьте чуткими и заботливыми.' },
+            { number: 'CKg', name: 'Король Кубков', suit: 'Кубки', keywords: 'Зрелость, контроль, мудрость',
+                img: 'images/king_of_cups.jpg', meaning: 'Управляйте эмоциями мудро. Ваша зрелость помогает другим.',
+                advice: 'Управляйте эмоциями мудро и с сердцем.' },
+
+            // ===== МЕЧИ (14) =====
+            { number: 'S1', name: 'Туз Мечей', suit: 'Мечи', keywords: 'Ясность, правда, прозрение', img: 'images/ace_of_swords.jpg',
+                meaning: 'Сегодня приходит ясность. Правда освобождает и даёт направление.',
+                advice: 'Примите правду и используйте её.' },
+            { number: 'S2', name: 'Двойка Мечей', suit: 'Мечи', keywords: 'Нерешительность, выбор, закрытость',
+                img: 'images/two_of_swords.jpg', meaning: 'Вы закрываете глаза на правду. Нужно принять решение.',
+                advice: 'Примите решение, даже если оно не идеально.' },
+            { number: 'S3', name: 'Тройка Мечей', suit: 'Мечи', keywords: 'Боль, разрыв, разочарование',
+                img: 'images/three_of_swords.jpg', meaning: 'Боль неизбежна, но она проходит. Не зацикливайтесь на ней.',
+                advice: 'Проживите боль и восстанавливайтесь.' },
+            { number: 'S4', name: 'Четвёрка Мечей', suit: 'Мечи', keywords: 'Отдых, восстановление, тишина',
+                img: 'images/four_of_swords.jpg', meaning: 'Сегодня нужен отдых. Восстановите силы перед новым этапом.',
+                advice: 'Отдохните и восстановите силы.' },
+            { number: 'S5', name: 'Пятёрка Мечей', suit: 'Мечи', keywords: 'Конфликт, поражение, борьба',
+                img: 'images/five_of_swords.jpg', meaning: 'В спорах нет победителей. Ищите выход для всех.',
+                advice: 'Завершите конфликт с достоинством.' },
+            { number: 'S6', name: 'Шестёрка Мечей', suit: 'Мечи', keywords: 'Переход, исцеление, помощь',
+                img: 'images/six_of_swords.jpg', meaning: 'Вы переходите к лучшему. Оставляйте проблемы позади.',
+                advice: 'Двигайтесь вперёд к исцелению.' },
+            { number: 'S7', name: 'Семёрка Мечей', suit: 'Мечи', keywords: 'Обман, уловка, хитрость', img: 'images/seven_of_swords.jpg',
+                meaning: 'Обман и хитрость могут быть вокруг. Будьте честны с собой.',
+                advice: 'Будьте честны с собой и другими.' },
+            { number: 'S8', name: 'Восьмёрка Мечей', suit: 'Мечи', keywords: 'Ограничения, страх, ловушка',
+                img: 'images/eight_of_swords.jpg', meaning: 'Вы сами создали свои ограничения. Снимите их.',
+                advice: 'Снимите с себя ограничения, вы свободны.' },
+            { number: 'S9', name: 'Девятка Мечей', suit: 'Мечи', keywords: 'Тревога, страхи, переживания',
+                img: 'images/nine_of_swords.jpg', meaning: 'Страхи — только в вашей голове. Успокойте ум.',
+                advice: 'Успокойте ум, страхи рассеются.' },
+            { number: 'S10', name: 'Десятка Мечей', suit: 'Мечи', keywords: 'Завершение, конец, освобождение',
+                img: 'images/ten_of_swords.jpg', meaning: 'Тяжёлый период завершён. Худшее позади.',
+                advice: 'Закройте старую страницу и начинайте новую.' },
+            { number: 'SP', name: 'Паж Мечей', suit: 'Мечи', keywords: 'Анализ, поиск, обучение', img: 'images/page_of_swords.jpg',
+                meaning: 'День исследований и новых знаний. Учитесь и анализируйте.',
+                advice: 'Учитесь и исследуйте.' },
+            { number: 'SK', name: 'Рыцарь Мечей', suit: 'Мечи', keywords: 'Решительность, правда, действие',
+                img: 'images/knight_of_swords.jpg', meaning: 'Действуйте решительно и говорите правду.',
+                advice: 'Действуйте решительно, но с умом.' },
+            { number: 'SQ', name: 'Королева Мечей', suit: 'Мечи', keywords: 'Честность, ясность, разум',
+                img: 'images/queen_of_swords.jpg', meaning: 'Смотрите правде в глаза. Ясность и честность — ваша сила.',
+                advice: 'Смотрите правде в глаза.' },
+            { number: 'SKg', name: 'Король Мечей', suit: 'Мечи', keywords: 'Интеллект, власть, стратегия',
+                img: 'images/king_of_swords.jpg', meaning: 'Принимайте решения с холодным умом и тёплым сердцем.',
+                advice: 'Принимайте решения с умом и сердцем.' },
+
+            // ===== ПЕНТАКЛИ (14) =====
+            { number: 'P1', name: 'Туз Пентаклей', suit: 'Пентакли', keywords: 'Ресурс, начало, возможность',
+                img: 'images/ace_of_pentacles.jpg', meaning: 'Новая материальная возможность. Возьмите её в руки.',
+                advice: 'Возьмите возможность и начинайте строить.' },
+            { number: 'P2', name: 'Двойка Пентаклей', suit: 'Пентакли', keywords: 'Баланс, гибкость, выбор',
+                img: 'images/two_of_pentacles.jpg', meaning: 'Балансируйте между делами. Расставьте приоритеты.',
+                advice: 'Найдите баланс и расставьте приоритеты.' },
+            { number: 'P3', name: 'Тройка Пентаклей', suit: 'Пентакли', keywords: 'Труд, мастерство, рост',
+                img: 'images/three_of_pentacles.jpg', meaning: 'Ваш труд приносит плоды. Учитесь и растите дальше.',
+                advice: 'Учитесь дальше и растите.' },
+            { number: 'P4', name: 'Четвёрка Пентаклей', suit: 'Пентакли', keywords: 'Удержание, контроль, стабильность',
+                img: 'images/four_of_pentacles.jpg', meaning: 'Страх потери мешает радоваться. Наслаждайтесь тем, что есть.',
+                advice: 'Наслаждайтесь стабильностью.' },
+            { number: 'P5', name: 'Пятёрка Пентаклей', suit: 'Пентакли', keywords: 'Трудности, потеря, одиночество',
+                img: 'images/five_of_pentacles.jpg', meaning: 'Трудности временны. Попросите помощи, она рядом.',
+                advice: 'Попросите помощи, она рядом.' },
+            { number: 'P6', name: 'Шестёрка Пентаклей', suit: 'Пентакли', keywords: 'Помощь, поддержка, баланс',
+                img: 'images/six_of_pentacles.jpg', meaning: 'Баланс давать и получать. Принимайте помощь и делитесь.',
+                advice: 'Принимайте помощь и делитесь с другими.' },
+            { number: 'P7', name: 'Семёрка Пентаклей', suit: 'Пентакли', keywords: 'Ожидание, оценка, терпение',
+                img: 'images/seven_of_pentacles.jpg', meaning: 'Всему своё время. Терпение — ключ к успеху.',
+                advice: 'Дождитесь плодов, всему своё время.' },
+            { number: 'P8', name: 'Восьмёрка Пентаклей', suit: 'Пентакли', keywords: 'Усердие, развитие, мастерство',
+                img: 'images/eight_of_pentacles.jpg', meaning: 'Работайте усердно и учитесь на практике.',
+                advice: 'Работайте усердно и учитесь.' },
+            { number: 'P9', name: 'Девятка Пентаклей', suit: 'Пентакли', keywords: 'Изобилие, независимость, наслаждение',
+                img: 'images/nine_of_pentacles.jpg', meaning: 'Наслаждайтесь плодами своего труда. Вы этого достойны.',
+                advice: 'Наслаждайтесь и делитесь изобилием.' },
+            { number: 'P10', name: 'Десятка Пентаклей', suit: 'Пентакли', keywords: 'Наследие, завершение, стабильность',
+                img: 'images/ten_of_pentacles.jpg', meaning: 'Завершите цикл и передайте эстафету дальше.',
+                advice: 'Завершите цикл и передайте эстафету.' },
+            { number: 'PP', name: 'Паж Пентаклей', suit: 'Пентакли', keywords: 'Учёба, начало, практика',
+                img: 'images/page_of_pentacles.jpg', meaning: 'Начало обучения или нового дела. Инвестируйте в своё будущее.',
+                advice: 'Начните учиться и инвестируйте в будущее.' },
+            { number: 'PK', name: 'Рыцарь Пентаклей', suit: 'Пентакли', keywords: 'Надёжность, стабильность, труд',
+                img: 'images/knight_of_pentacles.jpg', meaning: 'Идите уверенно, но иногда ускоряйтесь.',
+                advice: 'Идите уверенно, но не забывайте об ускорении.' },
+            { number: 'PQ', name: 'Королева Пентаклей', suit: 'Пентакли', keywords: 'Забота, практичность, уют',
+                img: 'images/queen_of_pentacles.jpg', meaning: 'Создавайте уют и стабильность. Ваша забота — это дар.',
+                advice: 'Создавайте уют и стабильность.' },
+            { number: 'PKg', name: 'Король Пентаклей', suit: 'Пентакли', keywords: 'Власть, опыт, управление',
+                img: 'images/king_of_pentacles.jpg', meaning: 'Управляйте мудро и создавайте стабильность для других.',
+                advice: 'Управляйте мудро и создавайте стабильность.' }
+        ];
+
+        // ============================================================
+        // ЛОГИКА
+        // ============================================================
+
+        let history = [];
+        let currentCard = null;
+        let currentDate = null;
+
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+        });
+
+        function getCardOfDay() {
+            const dateInput = document.getElementById('dateInput');
+            const date = dateInput.value;
+
+            if (!date) {
+                alert('Пожалуйста, выберите дату.');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const resultArea = document.getElementById('resultArea');
+            const getBtn = document.getElementById('getBtn');
+
+            loading.classList.add('show');
+            resultArea.classList.remove('show');
+            getBtn.disabled = true;
+
+            setTimeout(() => {
+                // Выбираем случайную карту
+                const randomIndex = Math.floor(Math.random() * allCards.length);
+                const card = allCards[randomIndex];
+                currentCard = card;
+                currentDate = date;
+
+                // Сохраняем в историю
+                history.push({
+                    date: date,
+                    name: card.name,
+                    number: card.number,
+                    suit: card.suit
+                });
+
+                displayResult(card, date);
+                loading.classList.remove('show');
+                getBtn.disabled = false;
+                updateHistory();
+            }, 1000);
+        }
+
+        function displayResult(card, date) {
+            const resultArea = document.getElementById('resultArea');
+            const cardEl = document.getElementById('resultCard');
+
+            // Форматируем дату
+            const dateObj = new Date(date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            // Проверяем, есть ли картинка
+            const imgSrc = card.img || '';
+
+            cardEl.innerHTML = `
+                <div>
+                    ${imgSrc ? `<img class="card-img" src="${imgSrc}" alt="${card.name}" onerror="this.style.display='none'">` : `<div class="card-img-placeholder">🃏</div>`}
+                </div>
+                <div class="card-info">
+                    <div class="card-number">${typeof card.number === 'number' ? '№ ' + card.number : card.number} · ${card.suit}</div>
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-keywords">${card.keywords}</div>
+                    <div class="card-meaning">
+                        <span class="label">📖 Значение карты</span>
+                        ${card.meaning}
+                    </div>
+                    <div class="card-advice">
+                        <span class="label">✅ Ваш совет</span>
+                        ${card.advice}
+                    </div>
+                    <div class="card-date">📅 ${formattedDate}</div>
+                </div>
+            `;
+
+            resultArea.classList.add('show');
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function refreshCard() {
+            if (!currentDate) {
+                alert('Сначала получите карту дня.');
+                return;
+            }
+            getCardOfDay();
+        }
+
+        function clearAll() {
+            history = [];
+            currentCard = null;
+            currentDate = null;
+            updateHistory();
+            document.getElementById('resultArea').classList.remove('show');
+            document.getElementById('loading').classList.remove('show');
+            document.getElementById('getBtn').disabled = false;
+            document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+        }
+
+        function updateHistory() {
+            const historyArea = document.getElementById('historyArea');
+            const historyList = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                historyArea.style.display = 'none';
+                return;
+            }
+
+            historyArea.style.display = 'block';
+            historyList.innerHTML = '';
+
+            const reversed = [...history].reverse().slice(0, 7);
+
+            reversed.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <span class="h-date">${item.date}</span>
+                    <span class="h-name">${item.name}</span>
+                    <span class="h-suit">${item.suit}</span>
+                `;
+                historyList.appendChild(div);
+            });
+        }
+
+        // ============================================================
+        // ПОДЕЛИТЬСЯ
+        // ============================================================
+
+        function shareResult(platform) {
+            if (!currentCard) {
+                alert('Сначала получите карту дня.');
+                return;
+            }
+
+            const text =
+                `🃏 Моя карта дня: ${currentCard.name}\n📖 ${currentCard.meaning}\n✅ Совет: ${currentCard.advice}\n\n✨ RelationMap | 7 шагов к ясности`;
+
+            const url = encodeURIComponent('https://relationmap.github.io/arkany/card_of_day.html');
+
+            switch (platform) {
+                case 'vk':
+                    window.open(`https://vk.com/share.php?url=${url}&title=Карта дня&description=${encodeURIComponent(text)}`,
+                        '_blank');
+                    break;
+                case 'tg':
+                    window.open(`https://t.me/share/url?url=${url}&text=${encodeURIComponent(text)}`, '_blank');
+                    break;
+                case 'copy':
+                    navigator.clipboard.writeText(text + '\n\nУзнайте свою карту дня: ' + decodeURIComponent(url)).then(() => {
+                        alert('✅ Текст скопирован в буфер обмена!');
+                    }).catch(() => {
+                        prompt('Скопируйте текст:', text);
+                    });
+                    break;
+                default:
+                    alert('Выберите способ публикации.');
+            }
+        }
+
+        // ============================================================
+        // КЛАВИАТУРА
+        // ============================================================
+
+        document.getElementById('dateInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                getCardOfDay();
+            }
+        });
+
+        console.log('🃏 Карта дня загружена!');
+        console.log('📅 Введите дату и получите совет от Вселенной.');
+        console.log('🖼️ Картинки загружаются из папки images/');
+    </script>
+
+</body>
+</html>
