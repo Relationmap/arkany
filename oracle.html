@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оракул Старших Арканов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0620, #1a0a2e, #2d1b4e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(26, 10, 46, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 35px 30px;
+            border: 1px solid rgba(45, 212, 191, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ===== ЛОГОТИП ===== */
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .logo .brand {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+        .logo .brand .highlight {
+            color: #2DD4BF;
+        }
+        .logo .brand .number-7 {
+            display: inline-block;
+            background: #2DD4BF;
+            color: #1a0a2e;
+            font-size: 0.7em;
+            font-weight: 900;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            border-radius: 50%;
+            margin: 0 4px;
+            box-shadow: 0 0 25px rgba(45, 212, 191, 0.2);
+        }
+        .logo .subtitle {
+            font-size: 0.85em;
+            color: #2DD4BF;
+            letter-spacing: 4px;
+            font-weight: 300;
+            margin-top: 2px;
+        }
+        .logo .author {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: 700;
+        }
+        .header p {
+            color: #c9b0e6;
+            font-size: 0.95em;
+            margin-top: 4px;
+        }
+
+        /* ===== ВВОД ВОПРОСА ===== */
+        .question-area {
+            background: rgba(45, 27, 78, 0.3);
+            border-radius: 16px;
+            padding: 20px 20px;
+            border: 1px solid rgba(45, 212, 191, 0.08);
+            margin-bottom: 25px;
+        }
+        .question-area label {
+            display: block;
+            font-size: 0.9em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .question-area textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(45, 212, 191, 0.15);
+            background: rgba(26, 10, 46, 0.6);
+            color: #fff;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 70px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .question-area textarea:focus {
+            border-color: #2DD4BF;
+            outline: none;
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.05);
+        }
+        .question-area textarea::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== КНОПКИ ===== */
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .btn {
+            padding: 12px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2DD4BF, #1a9e8a);
+            color: #1a0a2e;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(45, 212, 191, 0.25);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #c9b0e6;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(45, 212, 191, 0.2);
+        }
+        .btn-danger {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.15);
+        }
+        .btn-danger:hover {
+            background: rgba(231, 76, 60, 0.25);
+        }
+
+        /* ===== РЕЗУЛЬТАТ ===== */
+        .result-area {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+        .result-area.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .result-card {
+            background: rgba(45, 27, 78, 0.5);
+            border-radius: 20px;
+            padding: 25px 25px;
+            border: 2px solid rgba(45, 212, 191, 0.1);
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 25px;
+            align-items: start;
+            animation: pulse 2s infinite;
+        }
+        @media (max-width: 700px) {
+            .result-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        .result-card .arcana-img {
+            width: 100%;
+            max-width: 180px;
+            border-radius: 12px;
+            border: 3px solid rgba(45, 212, 191, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .result-card .arcana-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .result-card .arcana-number {
+            font-size: 0.8em;
+            color: #2DD4BF;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        .result-card .arcana-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        .result-card .arcana-keywords {
+            font-size: 0.9em;
+            color: #2DD4BF;
+        }
+        .result-card .arcana-message {
+            padding: 14px 16px;
+            background: rgba(26, 10, 46, 0.3);
+            border-radius: 10px;
+            border-left: 3px solid #2DD4BF;
+            color: #c9b0e6;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .result-card .arcana-message .label {
+            color: #2DD4BF;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .result-card .arcana-advice {
+            padding: 14px 16px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid #ffd700;
+            color: #c9b0e6;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .result-card .arcana-advice .label {
+            color: #ffd700;
+            font-weight: 600;
+            display: block;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        /* ===== ИСТОРИЯ ===== */
+        .history-area {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(45, 212, 191, 0.06);
+        }
+        .history-area h4 {
+            color: #2DD4BF;
+            font-size: 0.85em;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #2DD4BF;
+            border-radius: 10px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            background: rgba(26, 10, 46, 0.2);
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #c9b0e6;
+        }
+        .history-item .h-question {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+        .history-item .h-answer {
+            color: #2DD4BF;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ===== ПОДВАЛ ===== */
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.15);
+            padding: 15px 0 0;
+            font-size: 0.7em;
+            border-top: 1px solid rgba(45, 212, 191, 0.05);
+            margin-top: 20px;
+        }
+        .footer span {
+            color: #2DD4BF;
+        }
+
+        /* ===== АНИМАЦИЯ ЗАГРУЗКИ ===== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show {
+            display: block;
+        }
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(45, 212, 191, 0.1);
+            border-top: 3px solid #2DD4BF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .loading p {
+            color: #c9b0e6;
+            font-size: 0.9em;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .result-card .arcana-img {
+                max-width: 130px;
+                margin: 0 auto;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.85em;
+            }
+            .logo .brand {
+                font-size: 1.2em;
+            }
+            .logo .brand .number-7 {
+                width: 28px;
+                height: 28px;
+                line-height: 28px;
+                font-size: 0.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== ЛОГОТИП ===== -->
+        <div class="logo">
+            <div class="brand">
+                RelationMap <span class="highlight">|</span>
+                <span class="number-7">7</span>
+                <span>шагов к <span class="highlight">ясности</span></span>
+            </div>
+            <div class="subtitle">ОРАКУЛ СТАРШИХ АРКАНОВ</div>
+            <div class="author">Та самая Светлана</div>
+        </div>
+
+        <!-- ===== ЗАГОЛОВОК ===== -->
+        <div class="header">
+            <h1>🃏 Спросите у Арканов</h1>
+            <p>Задайте вопрос и получите ответ-совет от Старших арканов</p>
+        </div>
+
+        <!-- ===== ВВОД ВОПРОСА ===== -->
+        <div class="question-area">
+            <label for="questionInput">📝 Ваш вопрос</label>
+            <textarea id="questionInput" placeholder="Например: «Что мне сделать, чтобы принять правильное решение в ближайший месяц?» или «Как мне лучше поступить в сложившейся ситуации?»"></textarea>
+        </div>
+
+        <!-- ===== КНОПКИ ===== -->
+        <div class="btn-row">
+            <button class="btn btn-primary" id="askBtn" onclick="askOracle()">🔮 Получить ответ</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🗑️ Сбросить всё</button>
+        </div>
+
+        <!-- ===== ЗАГРУЗКА ===== -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Арканы размышляют над вашим вопросом...</p>
+        </div>
+
+        <!-- ===== РЕЗУЛЬТАТ ===== -->
+        <div class="result-area" id="resultArea">
+            <div class="result-card" id="resultCard">
+                <!-- Заполняется JS -->
+            </div>
+        </div>
+
+        <!-- ===== ИСТОРИЯ ===== -->
+        <div class="history-area" id="historyArea" style="display:none;">
+            <h4>📜 История ваших вопросов</h4>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <div class="footer">
+            RelationMap · <span>7 шагов к ясности</span> · Та самая Светлана
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // ДАННЫЕ: 22 СТАРШИХ АРКАНА
+        // ============================================================
+
+        const arcanaData = [{
+            number: 0,
+            name: 'Шут',
+            keywords: 'Начало, спонтанность, свобода',
+            img: 'images/00_fool.jpg',
+            message: 'Сейчас самое время для нового начала. Не бойтесь шагнуть в неизвестность — именно там вас ждёт ответ. Доверьтесь своей интуиции.',
+            advice: 'Сделайте первый шаг. Ваше сердце знает путь.'
+        }, {
+            number: 1,
+            name: 'Маг',
+            keywords: 'Воля, действие, мастерство',
+            img: 'images/01_magician.jpg',
+            message: 'У вас есть все необходимые инструменты для решения этого вопроса. Сила в ваших руках. Время действовать.',
+            advice: 'Действуйте решительно. Используйте свои таланты и навыки.'
+        }, {
+            number: 2,
+            name: 'Верховная Жрица',
+            keywords: 'Интуиция, мудрость, тайна',
+            img: 'images/02_high_priestess.jpg',
+            message: 'Ответ уже внутри вас. Отключите внешний шум и прислушайтесь к своей интуиции. Тишина даст вам ясность.',
+            advice: 'Уединитесь и послушайте свой внутренний голос.'
+        }, {
+            number: 3,
+            name: 'Императрица',
+            keywords: 'Творчество, изобилие, забота',
+            img: 'images/03_empress.jpg',
+            message: 'Ваш вопрос связан с созиданием и заботой. Позвольте себе быть в потоке изобилия. Решение придёт через любовь и творчество.',
+            advice: 'Создавайте, заботьтесь и доверяйте процессу роста.'
+        }, {
+            number: 4,
+            name: 'Император',
+            keywords: 'Структура, власть, порядок',
+            img: 'images/04_emperor.jpg',
+            message: 'Вам нужна структура и дисциплина. Ответ кроется в организации порядка. Возьмите ситуацию под контроль.',
+            advice: 'Установите чёткие правила и следуйте им.'
+        }, {
+            number: 5,
+            name: 'Верховный Жрец',
+            keywords: 'Традиция, обучение, вера',
+            img: 'images/05_hierophant.jpg',
+            message: 'Обратитесь к мудрости традиций или наставника. Ваш ответ может прийти через обучение или совет старшего.',
+            advice: 'Учитесь у тех, кто мудрее. Ищите знания.'
+        }, {
+            number: 6,
+            name: 'Влюблённые',
+            keywords: 'Выбор, отношения, ценности',
+            img: 'images/06_lovers.jpg',
+            message: 'Вы стоите перед важным выбором. Слушайте своё сердце, но не забывайте о разуме. Честность с собой — ключ к ответу.',
+            advice: 'Примите решение, основанное на ваших истинных ценностях.'
+        }, {
+            number: 7,
+            name: 'Колесница',
+            keywords: 'Контроль, победа, движение',
+            img: 'images/07_chariot.jpg',
+            message: 'Успех зависит от вашей решимости. Двигайтесь вперёд с уверенностью, контролируя свои эмоции.',
+            advice: 'Продолжайте движение. Вы на правильном пути.'
+        }, {
+            number: 8,
+            name: 'Сила',
+            keywords: 'Внутренняя мощь, терпение',
+            img: 'images/08_strength.jpg',
+            message: 'Сила кроется в терпении и мягкости. Укротите свои страсти и действуйте спокойно, но уверенно.',
+            advice: 'Проявляйте терпение и мягкую силу.'
+        }, {
+            number: 9,
+            name: 'Отшельник',
+            keywords: 'Поиск, уединение, мудрость',
+            img: 'images/09_hermit.jpg',
+            message: 'Ответ требует времени и уединения. Выйдите из шума и поищите мудрость внутри себя.',
+            advice: 'Проведите время в одиночестве, и ответ придёт.'
+        }, {
+            number: 10,
+            name: 'Колесо Фортуны',
+            keywords: 'Судьба, циклы, перемены',
+            img: 'images/10_wheel_of_fortune.jpg',
+            message: 'Ситуация меняется. Доверьтесь потоку судьбы — всё идёт к лучшему. Примите перемены.',
+            advice: 'Примите изменения с доверием к жизни.'
+        }, {
+            number: 11,
+            name: 'Справедливость',
+            keywords: 'Карма, закон, честность',
+            img: 'images/11_justice.jpg',
+            message: 'Будьте честны с собой. Ответ придёт через ясность и принятие ответственности за свои действия.',
+            advice: 'Будьте объективны и честны.'
+        }, {
+            number: 12,
+            name: 'Повешенный',
+            keywords: 'Пауза, жертва, новый взгляд',
+            img: 'images/12_hanged_man.jpg',
+            message: 'Иногда лучший ответ — сделать паузу и посмотреть на ситуацию с другой стороны.',
+            advice: 'Измените угол зрения. Не торопитесь с решением.'
+        }, {
+            number: 13,
+            name: 'Смерть',
+            keywords: 'Трансформация, обновление',
+            img: 'images/13_death.jpg',
+            message: 'Старое уходит, чтобы освободить место новому. Не держитесь за отжившее — трансформация неизбежна.',
+            advice: 'Отпустите прошлое и примите обновление.'
+        }, {
+            number: 14,
+            name: 'Умеренность',
+            keywords: 'Баланс, гармония, терпение',
+            img: 'images/14_temperance.jpg',
+            message: 'Ищите золотую середину. Баланс и терпение приведут вас к гармоничному решению.',
+            advice: 'Найдите баланс и двигайтесь плавно.'
+        }, {
+            number: 15,
+            name: 'Дьявол',
+            keywords: 'Тень, зависимости, освобождение',
+            img: 'images/15_devil.jpg',
+            message: 'Осознайте, что вас ограничивает. Ответ — в освобождении от зависимостей и страхов.',
+            advice: 'Осознайте свои цепи и разорвите их.'
+        }, {
+            number: 16,
+            name: 'Башня',
+            keywords: 'Крах, очищение, освобождение',
+            img: 'images/16_tower.jpg',
+            message: 'Внезапные перемены неизбежны. Воспринимайте их как очищение, необходимое для нового начала.',
+            advice: 'Примите крушение как освобождение.'
+        }, {
+            number: 17,
+            name: 'Звезда',
+            keywords: 'Надежда, исцеление, вдохновение',
+            img: 'images/17_star.jpg',
+            message: 'Надежда уже рядом. Ответ придёт через веру и исцеление. Ваша звезда указывает путь.',
+            advice: 'Верьте в лучшее и позволяйте себе исцеляться.'
+        }, {
+            number: 18,
+            name: 'Луна',
+            keywords: 'Иллюзии, страхи, подсознание',
+            img: 'images/18_moon.jpg',
+            message: 'Не всё так, как кажется. Разберитесь в иллюзиях и страхах. Правда приходит через осознание.',
+            advice: 'Смотрите вглубь себя и различайте реальность.'
+        }, {
+            number: 19,
+            name: 'Солнце',
+            keywords: 'Радость, успех, ясность',
+            img: 'images/19_sun.jpg',
+            message: 'Всё будет хорошо. Ответ ясен и приносит радость. Наслаждайтесь моментом успеха.',
+            advice: 'Радуйтесь и делитесь своим светом.'
+        }, {
+            number: 20,
+            name: 'Суд',
+            keywords: 'Пробуждение, прощение, призвание',
+            img: 'images/20_judgement.jpg',
+            message: 'Вас зовёт новое призвание. Ответ — в пробуждении и прощении себя и других.',
+            advice: 'Проснитесь к своей истинной жизни и простите.'
+        }, {
+            number: 21,
+            name: 'Мир',
+            keywords: 'Завершение, целостность, награда',
+            img: 'images/21_world.jpg',
+            message: 'Цикл завершён. Вы достигли цели. Наслаждайтесь результатом и готовьтесь к новому путешествию.',
+            advice: 'Завершите дела и откройтесь новому.'
+        }];
+
+        // ============================================================
+        // ЛОГИКА ОРАКУЛА
+        // ============================================================
+
+        let history = [];
+
+        function askOracle() {
+            const question = document.getElementById('questionInput').value.trim();
+            if (!question) {
+                alert('Пожалуйста, напишите ваш вопрос.');
+                return;
+            }
+
+            // Показываем загрузку
+            const loading = document.getElementById('loading');
+            const resultArea = document.getElementById('resultArea');
+            const askBtn = document.getElementById('askBtn');
+
+            loading.classList.add('show');
+            resultArea.classList.remove('show');
+            askBtn.disabled = true;
+
+            // Имитация задержки (для эффекта "размышления")
+            setTimeout(() => {
+                // Выбираем случайный аркан
+                const randomIndex = Math.floor(Math.random() * arcanaData.length);
+                const arcana = arcanaData[randomIndex];
+
+                // Сохраняем в историю
+                history.push({
+                    question: question,
+                    arcana: arcana.name,
+                    number: arcana.number,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+
+                // Отображаем результат
+                displayResult(arcana, question);
+                loading.classList.remove('show');
+                askBtn.disabled = false;
+
+                // Показываем историю
+                updateHistory();
+
+            }, 1200);
+        }
+
+        function displayResult(arcana, question) {
+            const resultArea = document.getElementById('resultArea');
+            const card = document.getElementById('resultCard');
+
+            card.innerHTML = `
+                <img class="arcana-img" src="${arcana.img}" alt="${arcana.name}" onerror="this.style.display='none'">
+                <div class="arcana-info">
+                    <div class="arcana-number">№ ${arcana.number === 0 ? '0' : arcana.number} · ${arcana.keywords}</div>
+                    <div class="arcana-name">${arcana.name}</div>
+                    <div class="arcana-message">
+                        <span class="label">📖 Ответ Арканов</span>
+                        ${arcana.message}
+                    </div>
+                    <div class="arcana-advice">
+                        <span class="label">✅ Ваш совет</span>
+                        ${arcana.advice}
+                    </div>
+                    <div style="font-size:0.75em;color:rgba(255,255,255,0.2);margin-top:4px;">
+                        Ваш вопрос: «${question.substring(0, 60)}${question.length > 60 ? '...' : ''}»
+                    </div>
+                </div>
+            `;
+
+            resultArea.classList.add('show');
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function updateHistory() {
+            const historyArea = document.getElementById('historyArea');
+            const historyList = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                historyArea.style.display = 'none';
+                return;
+            }
+
+            historyArea.style.display = 'block';
+            historyList.innerHTML = '';
+
+            // Показываем последние 10 запросов (сначала новые)
+            const reversed = [...history].reverse().slice(0, 10);
+
+            reversed.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <span class="h-question">${item.question}</span>
+                    <span class="h-answer">${item.arcana}</span>
+                `;
+                historyList.appendChild(div);
+            });
+        }
+
+        function clearAll() {
+            // Очищаем историю
+            history = [];
+            updateHistory();
+
+            // Очищаем вопрос
+            document.getElementById('questionInput').value = '';
+
+            // Скрываем результат
+            document.getElementById('resultArea').classList.remove('show');
+
+            // Убираем загрузку
+            document.getElementById('loading').classList.remove('show');
+
+            // Включаем кнопку
+            document.getElementById('askBtn').disabled = false;
+        }
+
+        // ============================================================
+        // КЛАВИАТУРНЫЙ ВВОД (Enter для отправки)
+        // ============================================================
+
+        document.getElementById('questionInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                askOracle();
+            }
+        });
+
+        // Подсказка для пользователя
+        console.log('🃏 Оракул Старших Арканов загружен!');
+        console.log('💡 Напишите вопрос и нажмите Ctrl+Enter для быстрого ответа.');
+        console.log('📜 История сохраняется в сессии.');
+    </script>
+
+</body>
+</html>
